@@ -9,7 +9,7 @@ Container Instances or the PostgreSQL Flexible Server.
 
 ```hcl
 module "subnet" {
-  source = "github.com/cybercapybara/terraform-azurerm-subnet"
+  source = "github.com/moveeeax/terraform-azurerm-subnet"
 
   name                 = "app-subnet"
   resource_group_name  = "prod-rg"
