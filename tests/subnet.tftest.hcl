@@ -2,7 +2,17 @@
 # >= 1.7). The module itself still supports Terraform >= 1.5 - running the
 # tests is not a prerequisite for using it. Mocking keeps `terraform test`
 # offline: no Azure credentials and no API calls.
-mock_provider "azurerm" {}
+#
+# The subnet ID is pinned to a well-formed one because the association
+# resources validate the shape of `subnet_id`, and OpenTofu fills mocked
+# attributes in during plan rather than leaving them unknown.
+mock_provider "azurerm" {
+  mock_resource "azurerm_subnet" {
+    defaults = {
+      id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-rg/providers/Microsoft.Network/virtualNetworks/example-vnet/subnets/app-subnet"
+    }
+  }
+}
 
 variables {
   name                 = "app-subnet"
