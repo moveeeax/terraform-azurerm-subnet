@@ -24,6 +24,10 @@ jobs:
       - name: validate
         run: tofu validate
 
+      # The suite mocks the azurerm provider, so it needs no Azure credentials.
+      - name: test
+        run: tofu test
+
       - name: validate example
         working-directory: examples/basic
         run: |
