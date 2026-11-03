@@ -9,10 +9,19 @@ resource "azurerm_subnet" "this" {
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.virtual_network_name
   address_prefixes     = var.address_prefixes
-  service_endpoints    = var.service_endpoints
 
   private_endpoint_network_policies             = var.private_endpoint_network_policies
   private_link_service_network_policies_enabled = var.private_link_service_network_policies_enabled
+
+  # azurerm 5.0 replaced the `service_endpoints` list with one
+  # `service_endpoint` block per service. The input stays a list of service
+  # names so callers upgrading from 1.x keep the same interface.
+  dynamic "service_endpoint" {
+    for_each = var.service_endpoints
+    content {
+      service = service_endpoint.value
+    }
+  }
 
   dynamic "delegation" {
     for_each = var.delegations

@@ -170,3 +170,16 @@ run "rejects_route_table_name_instead_of_id" {
 
   expect_failures = [var.route_table_id]
 }
+
+run "service_endpoints_become_blocks" {
+  command = plan
+
+  variables {
+    service_endpoints = ["Microsoft.Storage", "Microsoft.KeyVault"]
+  }
+
+  assert {
+    condition     = [for endpoint in azurerm_subnet.this.service_endpoint : endpoint.service] == ["Microsoft.Storage", "Microsoft.KeyVault"]
+    error_message = "Each entry in service_endpoints should become one service_endpoint block, in order."
+  }
+}
