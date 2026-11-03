@@ -9,7 +9,12 @@ terraform {
       # azurerm 3.103.0 onwards. Against 3.102.0 and older `terraform validate`
       # fails with `An argument named "private_endpoint_network_policies" is
       # not expected here.`, so the constraint has to start there.
-      version = ">= 3.103.0"
+      #
+      # azurerm 5.0 removed the `service_endpoints` list in favour of repeated
+      # `service_endpoint` blocks, and 4.x has no such block, so one
+      # configuration cannot serve both majors. Until the module moves to 5.x
+      # in a new major release, 5.0 is the ceiling.
+      version = ">= 3.103.0, < 5.0"
     }
   }
 }

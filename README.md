@@ -10,7 +10,7 @@ subnet with an existing network security group and route table.
 
 ```hcl
 module "subnet" {
-  source = "github.com/moveeeax/terraform-azurerm-subnet"
+  source = "github.com/moveeeax/terraform-azurerm-subnet?ref=v1.0.1"
 
   name                 = "app-subnet"
   resource_group_name  = "prod-rg"
@@ -30,7 +30,7 @@ delegation's own default action set, which is what you usually want:
 
 ```hcl
 module "postgresql_subnet" {
-  source = "github.com/moveeeax/terraform-azurerm-subnet"
+  source = "github.com/moveeeax/terraform-azurerm-subnet?ref=v1.0.1"
 
   name                 = "pg-subnet"
   resource_group_name  = "prod-rg"
@@ -55,7 +55,7 @@ and `route_table_id` to have this module own them:
 
 ```hcl
 module "subnet" {
-  source = "github.com/moveeeax/terraform-azurerm-subnet"
+  source = "github.com/moveeeax/terraform-azurerm-subnet?ref=v1.0.1"
 
   name                 = "app-subnet"
   resource_group_name  = "prod-rg"
@@ -84,14 +84,20 @@ not declare subnets inline.
 
 ## Requirements
 
-| Name      | Version    |
-|-----------|------------|
-| terraform | >= 1.5     |
-| azurerm   | >= 3.103.0 |
+| Name      | Version           |
+|-----------|-------------------|
+| terraform | >= 1.5            |
+| azurerm   | >= 3.103.0, < 5.0 |
 
 `private_endpoint_network_policies` (the string that replaced the boolean
 `private_endpoint_network_policies_enabled`) was added in azurerm 3.103.0, so
 that is the real floor for this module.
+
+azurerm 5.0 removed the `service_endpoints` argument of `azurerm_subnet` and
+replaced it with repeated `service_endpoint` blocks, which 4.x does not have.
+No single configuration works against both majors, so this release line stops
+below 5.0. Pin a tag with `?ref=` so that a later major release of the module
+cannot change the provider range under you.
 
 ## Inputs
 
