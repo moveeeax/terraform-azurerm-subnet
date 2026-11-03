@@ -10,7 +10,7 @@ subnet with an existing network security group and route table.
 
 ```hcl
 module "subnet" {
-  source = "github.com/moveeeax/terraform-azurerm-subnet"
+  source = "github.com/moveeeax/terraform-azurerm-subnet?ref=v1.0.1"
 
   name                 = "app-subnet"
   resource_group_name  = "prod-rg"
@@ -30,7 +30,7 @@ delegation's own default action set, which is what you usually want:
 
 ```hcl
 module "postgresql_subnet" {
-  source = "github.com/moveeeax/terraform-azurerm-subnet"
+  source = "github.com/moveeeax/terraform-azurerm-subnet?ref=v1.0.1"
 
   name                 = "pg-subnet"
   resource_group_name  = "prod-rg"
@@ -55,7 +55,7 @@ and `route_table_id` to have this module own them:
 
 ```hcl
 module "subnet" {
-  source = "github.com/moveeeax/terraform-azurerm-subnet"
+  source = "github.com/moveeeax/terraform-azurerm-subnet?ref=v1.0.1"
 
   name                 = "app-subnet"
   resource_group_name  = "prod-rg"
