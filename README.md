@@ -84,14 +84,20 @@ not declare subnets inline.
 
 ## Requirements
 
-| Name      | Version    |
-|-----------|------------|
-| terraform | >= 1.5     |
-| azurerm   | >= 3.103.0 |
+| Name      | Version           |
+|-----------|-------------------|
+| terraform | >= 1.5            |
+| azurerm   | >= 3.103.0, < 5.0 |
 
 `private_endpoint_network_policies` (the string that replaced the boolean
 `private_endpoint_network_policies_enabled`) was added in azurerm 3.103.0, so
 that is the real floor for this module.
+
+azurerm 5.0 removed the `service_endpoints` argument of `azurerm_subnet` and
+replaced it with repeated `service_endpoint` blocks, which 4.x does not have.
+No single configuration works against both majors, so this release line stops
+below 5.0. Pin a tag with `?ref=` so that a later major release of the module
+cannot change the provider range under you.
 
 ## Inputs
 
