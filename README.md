@@ -4,7 +4,7 @@ Terraform module that manages an [Azure](https://azure.microsoft.com/) subnet
 within an existing virtual network. It supports service endpoints and service
 delegations, allowing the subnet to be dedicated to services such as Azure
 Container Instances or the PostgreSQL Flexible Server, and can associate the
-subnet with an existing network security group and route table.
+subnet with an existing network security group, route table and NAT gateway.
 
 ## Usage
 
@@ -71,6 +71,34 @@ Leave them `null` (the default) if the association is created elsewhere -
 two Terraform resources pointing at the same subnet will fight over it on every
 apply.
 
+### NAT gateway
+
+Azure is retiring default outbound access for virtual machines, so a new subnet
+needs an explicit egress path, and a NAT gateway is the usual one. Set
+`nat_gateway_id` to have this module create the
+`azurerm_subnet_nat_gateway_association`:
+
+```hcl
+module "subnet" {
+  source = "github.com/moveeeax/terraform-azurerm-subnet?ref=v2.1.0"
+
+  name                 = "app-subnet"
+  resource_group_name  = "prod-rg"
+  virtual_network_name = "prod-vnet"
+  address_prefixes     = ["10.0.1.0/24"]
+
+  nat_gateway_id = azurerm_nat_gateway.egress.id
+}
+```
+
+The NAT gateway itself (and its public IP or prefix) is created outside the
+module. `azurerm_subnet` has no NAT gateway argument, so this association is
+the only place the link lives, and Azure allows one NAT gateway per subnet. The
+same ownership rule as above applies: leave `nat_gateway_id` at `null` (the
+default) when the association is declared somewhere else, for example next to
+the NAT gateway, or the two resources will fight over the subnet. The default
+creates nothing, so upgrading the module does not change existing plans.
+
 ### Use with terraform-azurerm-vnet
 
 `azurerm_virtual_network` also accepts inline `subnet` blocks, and that
@@ -109,6 +137,7 @@ module targets azurerm 5.x; for azurerm 3.103.0 up to 4.x use the 1.x line
 | `delegations`                                   | List of service delegations applied to the subnet: `name`, `service_name` and optional `actions`. | `list(object)` | `[]` | no |
 | `network_security_group_id`                     | Resource ID of an existing network security group to associate with the subnet.  | `string`       | `null`       |    no    |
 | `route_table_id`                                | Resource ID of an existing route table to associate with the subnet.             | `string`       | `null`       |    no    |
+| `nat_gateway_id`                                | Resource ID of an existing NAT gateway to associate with the subnet.             | `string`       | `null`       |    no    |
 
 ## Outputs
 
@@ -117,6 +146,7 @@ module targets azurerm 5.x; for azurerm 3.103.0 up to 4.x use the 1.x line
 | `id`               | ID of the subnet.                      |
 | `name`             | Name of the subnet.                    |
 | `address_prefixes` | Address prefixes assigned to the subnet.|
+| `nat_gateway_association_id` | ID of the NAT gateway association, or `null` when `nat_gateway_id` is not set. |
 
 ## Development
 

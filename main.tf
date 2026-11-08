@@ -53,3 +53,13 @@ resource "azurerm_subnet_route_table_association" "this" {
   subnet_id      = azurerm_subnet.this.id
   route_table_id = var.route_table_id
 }
+
+# `azurerm_subnet` has no NAT gateway argument, not even a computed one, so the
+# association resource is the only way to attach one. Azure allows one NAT
+# gateway per subnet.
+resource "azurerm_subnet_nat_gateway_association" "this" {
+  count = var.nat_gateway_id == null ? 0 : 1
+
+  subnet_id      = azurerm_subnet.this.id
+  nat_gateway_id = var.nat_gateway_id
+}
