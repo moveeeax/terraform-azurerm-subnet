@@ -43,6 +43,39 @@ run "defaults_are_conservative" {
     condition     = length(azurerm_subnet_route_table_association.this) == 0
     error_message = "No route table association should be created when route_table_id is null."
   }
+
+  assert {
+    condition     = length(azurerm_subnet_nat_gateway_association.this) == 0
+    error_message = "No NAT gateway association should be created when nat_gateway_id is null, so existing subnets plan unchanged."
+  }
+
+  assert {
+    condition     = output.nat_gateway_association_id == null
+    error_message = "nat_gateway_association_id should be null when no NAT gateway is associated."
+  }
+}
+
+run "nat_gateway_association_is_created_when_id_is_given" {
+  command = plan
+
+  variables {
+    nat_gateway_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-rg/providers/Microsoft.Network/natGateways/example-natgw"
+  }
+
+  assert {
+    condition     = azurerm_subnet_nat_gateway_association.this[0].nat_gateway_id == var.nat_gateway_id
+    error_message = "The NAT gateway association should point at the supplied NAT gateway."
+  }
+}
+
+run "rejects_nat_gateway_name_instead_of_id" {
+  command = plan
+
+  variables {
+    nat_gateway_id = "example-natgw"
+  }
+
+  expect_failures = [var.nat_gateway_id]
 }
 
 run "associations_are_created_when_ids_are_given" {

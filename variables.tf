@@ -137,3 +137,18 @@ variable "route_table_id" {
     error_message = "route_table_id must be the full Azure resource ID of a route table, starting with \"/subscriptions/\"."
   }
 }
+
+variable "nat_gateway_id" {
+  description = <<-EOT
+    Resource ID of an existing NAT gateway to associate with the subnet for
+    explicit outbound internet access. `null` creates no association, leaving
+    any association managed elsewhere untouched.
+  EOT
+  type        = string
+  default     = null
+
+  validation {
+    condition     = var.nat_gateway_id == null ? true : can(regex("^/subscriptions/[^/]+/", var.nat_gateway_id))
+    error_message = "nat_gateway_id must be the full Azure resource ID of a NAT gateway, starting with \"/subscriptions/\"."
+  }
+}
